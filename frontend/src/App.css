@@ -1,0 +1,215 @@
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+
+/* ── App Layout ───────────────────────────────────────────────────────────── */
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.main-content { flex: 1; padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; }
+.loading { text-align: center; padding: 60px; color: #6b7280; font-size: 16px; }
+
+/* ── Navbar ───────────────────────────────────────────────────────────────── */
+.navbar { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 0 24px; display: flex; align-items: center; gap: 8px; height: 64px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 100; }
+.navbar-brand a { color: #e2e8f0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.navbar-links { display: flex; gap: 4px; flex: 1; margin: 0 16px; }
+.nav-link { color: #94a3b8; padding: 8px 12px; border-radius: 6px; font-size: 14px; transition: all 0.2s; white-space: nowrap; }
+.nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.1); color: #fff; }
+.navbar-user { display: flex; align-items: center; gap: 10px; }
+.user-badge { background: #3b82f6; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; text-transform: capitalize; }
+.user-name { color: #e2e8f0; font-size: 14px; }
+.btn-logout { background: rgba(239,68,68,0.2); color: #fca5a5; padding: 6px 14px; border-radius: 6px; }
+.btn-logout:hover { background: #ef4444; color: white; }
+
+/* ── Page ─────────────────────────────────────────────────────────────────── */
+.page { padding: 0; }
+.page-header { margin-bottom: 28px; }
+.page-header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+.page-header p { color: #6b7280; margin-top: 4px; }
+.btn-back { background: #e5e7eb; color: #374151; padding: 8px 16px; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 6px; }
+.btn-back:hover { background: #d1d5db; }
+
+/* ── Auth Pages ───────────────────────────────────────────────────────────── */
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+.auth-card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.auth-logo { font-size: 48px; text-align: center; margin-bottom: 8px; }
+.auth-card h1 { text-align: center; font-size: 24px; color: #1a1a2e; margin-bottom: 4px; }
+.auth-card h2 { text-align: center; font-size: 16px; color: #6b7280; margin-bottom: 24px; font-weight: 400; }
+.auth-footer { text-align: center; margin-top: 16px; color: #6b7280; font-size: 14px; }
+.auth-footer a { color: #3b82f6; font-weight: 500; }
+.auth-hint { text-align: center; margin-top: 12px; color: #9ca3af; font-size: 12px; background: #f9fafb; padding: 8px; border-radius: 6px; }
+
+/* ── Forms ────────────────────────────────────────────────────────────────── */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px;
+  font-size: 14px; color: #1a1a2e; background: white; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.form-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
+.btn-primary:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 4px 12px rgba(59,130,246,0.4); }
+.btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+.btn-secondary { background: #f3f4f6; color: #374151; padding: 8px 16px; border-radius: 8px; font-weight: 500; }
+.btn-secondary:hover { background: #e5e7eb; }
+.btn-success { background: #10b981; color: white; padding: 8px 14px; border-radius: 6px; }
+.btn-success:hover { background: #059669; }
+.btn-danger { background: #ef4444; color: white; padding: 8px 14px; border-radius: 6px; }
+.btn-danger:hover { background: #dc2626; }
+.btn-xs { padding: 4px 10px; font-size: 12px; border-radius: 4px; background: #e5e7eb; color: #374151; margin: 2px; }
+.btn-xs:hover { background: #d1d5db; }
+.btn-xs.success { background: #d1fae5; color: #065f46; }
+.btn-xs.success:hover { background: #10b981; color: white; }
+.btn-xs.danger { background: #fee2e2; color: #991b1b; }
+.btn-xs.danger:hover { background: #ef4444; color: white; }
+.full-width { width: 100%; }
+
+/* ── Alerts ───────────────────────────────────────────────────────────────── */
+.alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; cursor: pointer; }
+.alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+/* ── Stats Grid ───────────────────────────────────────────────────────────── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; border-top: 3px solid #3b82f6; }
+.stat-card.alert-stat { border-top-color: #f59e0b; }
+.stat-value { font-size: 32px; font-weight: 700; color: #1a1a2e; }
+.stat-label { font-size: 13px; color: #6b7280; margin-top: 4px; }
+
+/* ── Dashboard ────────────────────────────────────────────────────────────── */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+@media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+.dashboard-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-header h2 { font-size: 16px; font-weight: 600; }
+.lot-card { display: flex; justify-content: space-between; align-items: center; padding: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; transition: all 0.2s; }
+.lot-card:hover { border-color: #3b82f6; background: #eff6ff; }
+.lot-info h3 { font-size: 15px; font-weight: 600; }
+.lot-info p { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.lot-availability { text-align: right; }
+.avail-num { font-size: 28px; font-weight: 700; color: #10b981; }
+.avail-label { font-size: 11px; color: #6b7280; }
+.reservation-card { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; }
+.reservation-card h3 { font-size: 14px; font-weight: 600; }
+.reservation-card p { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.res-right { text-align: right; display: flex; flex-direction: column; gap: 4px; }
+.price { font-weight: 700; color: #1a1a2e; }
+.quick-actions h2 { font-size: 18px; font-weight: 600; margin-bottom: 14px; }
+.actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+.action-card { background: white; border-radius: 12px; padding: 20px 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #374151; }
+.action-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+.action-icon { font-size: 28px; }
+
+/* ── Parking Lots Page ────────────────────────────────────────────────────── */
+.search-bar { margin-bottom: 20px; }
+.search-bar input { width: 100%; max-width: 500px; padding: 12px 18px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 15px; }
+.search-bar input:focus { outline: none; border-color: #3b82f6; }
+.lots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.lot-detail-card { background: white; border-radius: 14px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; border: 1.5px solid transparent; }
+.lot-detail-card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.lot-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.lot-header h2 { font-size: 17px; font-weight: 700; }
+.lot-location { color: #6b7280; font-size: 13px; margin-bottom: 10px; }
+.lot-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-size: 13px; color: #6b7280; }
+.availability-bar { margin-bottom: 16px; }
+.avail-row { display: flex; gap: 16px; font-size: 13px; margin-bottom: 8px; }
+.green { color: #10b981; }
+.yellow { color: #f59e0b; }
+.red { color: #ef4444; }
+.progress-bar { height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); border-radius: 3px; transition: width 0.5s; }
+.progress-label { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+.lot-action { text-align: right; }
+
+/* ── Lot Detail ───────────────────────────────────────────────────────────── */
+.lot-detail-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+@media (max-width: 900px) { .lot-detail-layout { grid-template-columns: 1fr; } }
+.spaces-section h2, .reservation-form-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 14px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6b7280; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.spaces-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
+.space-cell { padding: 10px 6px; border-radius: 8px; border: 2px solid; text-align: center; font-size: 12px; font-weight: 600; cursor: default; transition: all 0.2s; }
+.space-cell.free { background: #d1fae5; cursor: pointer; }
+.space-cell.free:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.space-cell.reserved { background: #fef3c7; }
+.space-cell.occupied { background: #fee2e2; }
+.space-cell.maintenance, .space-cell.unavailable { background: #f3f4f6; }
+.space-cell.selected { background: #eff6ff !important; border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.3); }
+.space-num { display: block; font-size: 11px; }
+.space-type { font-size: 14px; }
+.selected-info { margin-top: 12px; padding: 10px 14px; background: #eff6ff; border-radius: 8px; color: #1d4ed8; font-size: 14px; border: 1px solid #bfdbfe; }
+.reservation-form-section { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); align-self: start; position: sticky; top: 80px; }
+.price-estimate { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.price-estimate strong { font-size: 20px; color: #065f46; }
+.price-estimate small { color: #6b7280; font-size: 11px; }
+
+/* ── Reservations ─────────────────────────────────────────────────────────── */
+.reservations-list { display: flex; flex-direction: column; gap: 14px; }
+.reservation-item { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.res-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.res-header h3 { font-size: 16px; font-weight: 600; }
+.res-body { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.res-info p { font-size: 14px; color: #6b7280; margin-bottom: 4px; }
+.res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── Subscriptions ────────────────────────────────────────────────────────── */
+.section { margin-bottom: 32px; }
+.section h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+.subs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.sub-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 3px solid #10b981; }
+.sub-card.expired { border-top-color: #9ca3af; opacity: 0.7; }
+.sub-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.sub-card p { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+.plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.plan-card { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1.5px solid #e5e7eb; transition: border-color 0.2s; }
+.plan-card:hover { border-color: #3b82f6; }
+.plan-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+.plan-price { font-size: 28px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+.plan-price span { font-size: 14px; color: #6b7280; font-weight: 400; }
+.plan-card p { font-size: 13px; color: #6b7280; margin-bottom: 12px; }
+.plan-note { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+/* ── Discounts ────────────────────────────────────────────────────────────── */
+.discount-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.discount-card p { font-size: 14px; color: #6b7280; margin-bottom: 4px; }
+.discount-info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; }
+.discount-info p { font-size: 14px; color: #1d4ed8; margin-bottom: 6px; }
+
+/* ── Violations ───────────────────────────────────────────────────────────── */
+.violations-list { display: flex; flex-direction: column; gap: 14px; }
+.violation-item { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: flex-start; gap: 16px; border-left: 4px solid #ef4444; }
+.violation-icon { font-size: 28px; }
+.violation-details { flex: 1; }
+.violation-details h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.violation-details p { font-size: 13px; color: #6b7280; margin-bottom: 3px; }
+.violation-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+/* ── Admin ────────────────────────────────────────────────────────────────── */
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 24px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.tab-btn { padding: 8px 16px; border-radius: 8px; background: transparent; color: #6b7280; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+.tab-btn:hover { background: #f3f4f6; color: #374151; }
+.tab-btn.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+.admin-content { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.table-wrapper { overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.admin-table th { background: #f8fafc; padding: 12px 14px; text-align: left; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
+.admin-table td { padding: 12px 14px; border-bottom: 1px solid #f3f4f6; color: #374151; }
+.admin-table tr:hover td { background: #f9fafb; }
+.inline-form { margin-top: 0; }
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+.status-badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: white; white-space: nowrap; }
+.zone-badge { background: #eff6ff; color: #3b82f6; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.role-badge { background: #f3f4f6; color: #374151; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; }
+.status-dot.active { background: #10b981; }
+.status-dot.inactive, .status-dot.maintenance { background: #f59e0b; }
+
+/* ── Empty State ──────────────────────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 60px 24px; color: #9ca3af; }
+.empty-state p { margin-bottom: 16px; font-size: 16px; }
