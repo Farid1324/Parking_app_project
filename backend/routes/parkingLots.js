@@ -1,0 +1,90 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../config/db');
+const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+
+// Get all parking lots with availability
+router.get('/', authMiddleware, async (req, res) => {
+  try {
+    const [lots] = await db.execute(`
+      SELECT pl.*, 
+        COUNT(ps.space_id) as total_spaces,
+        SUM(CASE WHEN ps.status = 'free' THEN 1 ELSE 0 END) as free_spaces,
+        SUM(CASE WHEN ps.status = 'occupied' THEN 1 ELSE 0 END) as occupied_spaces,
+        SUM(CASE WHEN ps.status = 'reserved' THEN 1 ELSE 0 END) as reserved_spaces
+      FROM parking_lot pl
+      LEFT JOIN parking_space ps ON pl.lot_id = ps.lot_id
+      GROUP BY pl.lot_id
+    `);
+    res.json(lots);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/:id', authMiddleware, async (req, res) => {
+  try {
+    const [lots] = await db.execute('SELECT * FROM parking_lot WHERE lot_id = ?', [req.params.id]);
+    if (lots.length === 0) return res.status(404).json({ message: 'Lot not found' });
+    const [spaces] = await db.execute(
+      'SELECT * FROM parking_space WHERE lot_id = ? ORDER BY space_number',
+      [req.params.id]
+    );
+    res.json({ ...lots[0], spaces });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { name, location, total_capacity, opening_hours, zone, status } = req.body;
+    if (!name || !location || !total_capacity || !zone) {
+      return res.status(400).json({ message: 'Required fields missing' });
+    }
+    const hours = opening_hours || '00:00-24:00';
+    const [result] = await db.execute(
+      'INSERT INTO parking_lot (name, location, total_capacity, opening_hours, zone, status) VALUES (?,?,?,?,?,?)',
+      [name, location, total_capacity, hours, zone, status || 'active']
+    );
+    const lotId = result.insertId;
+    for (let i = 1; i <= total_capacity; i++) {
+      const spaceNum = `${zone.substring(0,2).toUpperCase()}-${String(i).padStart(3,'0')}`;
+      await db.execute(
+        'INSERT INTO parking_space (lot_id, space_number, status, space_type) VALUES (?,?,?,?)',
+        [lotId, spaceNum, 'free', 'standard']
+      );
+    }
+    res.status(201).json({ message: 'Parking lot created', lot_id: lotId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { name, location, total_capacity, opening_hours, zone, status } = req.body;
+    const hours = opening_hours || '00:00-24:00';
+    await db.execute(
+      'UPDATE parking_lot SET name=?, location=?, total_capacity=?, opening_hours=?, zone=?, status=? WHERE lot_id=?',
+      [name, location, total_capacity, hours, zone, status, req.params.id]
+    );
+    res.json({ message: 'Lot updated' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await db.execute('DELETE FROM parking_lot WHERE lot_id = ?', [req.params.id]);
+    res.json({ message: 'Lot deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+module.exports = router;
+
