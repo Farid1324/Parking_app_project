@@ -68,6 +68,26 @@ router.get('/subscriptions/my', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ message: 'Server error' }); }
 });
 
+
+router.put('/subscriptions/:id/cancel', authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      'SELECT * FROM subscription WHERE subscription_id = ? AND user_id = ?',
+      [req.params.id, req.user.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: 'Subscription not found' });
+    if (rows[0].status === 'cancelled') return res.status(400).json({ message: 'Already cancelled' });
+    await db.execute(
+      "UPDATE subscription SET status = 'cancelled' WHERE subscription_id = ?",
+      [req.params.id]
+    );
+    res.json({ message: 'Subscription cancelled' });
+  } catch (err) { res.status(500).json({ message: 'Server error' }); }
+});
+
+
+
+
 router.post('/subscriptions', authMiddleware, async (req, res) => {
   try {
     const { plan_id } = req.body;
