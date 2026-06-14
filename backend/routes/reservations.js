@@ -2,6 +2,55 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { calculatePrice } = require('../utils/pricing');
+
+// Estimate price (no booking)
+router.get('/estimate', authMiddleware, async (req, res) => {
+  try {
+    const { space_id, start_time, end_time } = req.query;
+    if (!space_id || !start_time || !end_time) {
+      return res.status(400).json({ message: 'space_id, start_time, end_time required' });
+    }
+
+    const start = new Date(start_time);
+    const end = new Date(end_time);
+    if (end <= start) return res.status(400).json({ message: 'end_time must be after start_time' });
+
+    const hours = Math.max((end - start) / (1000 * 60 * 60), 0.5);
+
+    const [lot] = await db.execute(
+      'SELECT pl.* FROM parking_lot pl JOIN parking_space ps ON pl.lot_id = ps.lot_id WHERE ps.space_id = ?',
+      [space_id]
+    );
+    if (lot.length === 0) return res.status(404).json({ message: 'Space not found' });
+
+    const [pricingRules] = await db.execute(
+      'SELECT * FROM pricing_rule WHERE lot_id = ? AND (user_type = ? OR user_type IS NULL) ORDER BY user_type DESC LIMIT 1',
+      [lot[0].lot_id, req.user.role]
+    );
+    const base_rate = pricingRules.length > 0 ? parseFloat(pricingRules[0].rate_per_hour) : 2.00;
+
+    const [discount] = await db.execute(
+      "SELECT * FROM student_discount WHERE user_id = ? AND status = 'approved'",
+      [req.user.id]
+    );
+    const has_student_discount = discount.length > 0;
+
+    const [sub] = await db.execute(
+      "SELECT s.* FROM subscription s JOIN subscription_plan sp ON s.plan_id = sp.plan_id WHERE s.user_id = ? AND s.status = 'active' AND s.end_date >= CURDATE() AND sp.zone = ?",
+      [req.user.id, lot[0].zone]
+    );
+    const has_subscription = sub.length > 0;
+
+    const rate = has_student_discount ? base_rate * 0.5 : base_rate;
+    const price = has_subscription ? 0 : Math.round(hours * rate * 100) / 100;
+
+    res.json({ price, base_rate, hours: Math.round(hours * 100) / 100, has_student_discount, has_subscription });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // Get user's reservations
 router.get('/my', authMiddleware, async (req, res) => {
@@ -84,34 +133,12 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Time slot already reserved' });
     }
 
-    // Calculate price
+    // Calculate price (shared logic with GET /estimate)
     const [lot] = await conn.execute(
       'SELECT pl.* FROM parking_lot pl JOIN parking_space ps ON pl.lot_id = ps.lot_id WHERE ps.space_id = ?',
       [space_id]
     );
-    const [pricingRules] = await conn.execute(
-      'SELECT * FROM pricing_rule WHERE lot_id = ? AND (user_type = ? OR user_type IS NULL) ORDER BY user_type DESC LIMIT 1',
-      [lot[0].lot_id, req.user.role]
-    );
-
-    const start = new Date(start_time);
-    const end = new Date(end_time);
-    const hours = Math.max((end - start) / (1000 * 60 * 60), 0.5);
-    let rate = pricingRules.length > 0 ? parseFloat(pricingRules[0].rate_per_hour) : 2.00;
-
-    // Check student discount
-    const [discount] = await conn.execute(
-      "SELECT * FROM student_discount WHERE user_id = ? AND status = 'approved'",
-      [req.user.id]
-    );
-    if (discount.length > 0) rate = rate * 0.5;
-
-    // Check active subscription
-    const [sub] = await conn.execute(
-      "SELECT s.* FROM subscription s JOIN subscription_plan sp ON s.plan_id = sp.plan_id WHERE s.user_id = ? AND s.status = 'active' AND s.end_date >= CURDATE() AND sp.zone = ?",
-      [req.user.id, lot[0].zone]
-    );
-    let price = sub.length > 0 ? 0 : Math.round(hours * rate * 100) / 100;
+    const { price } = await calculatePrice(conn, req.user, lot[0], start_time, end_time);
 
     const [result] = await conn.execute(
       'INSERT INTO reservation (user_id, space_id, start_time, end_time, price, status, created_at) VALUES (?,?,?,?,?,?,NOW())',
@@ -161,7 +188,7 @@ router.put('/:id/complete', authMiddleware, async (req, res) => {
     const [rows] = await conn.execute('SELECT * FROM reservation WHERE reservation_id = ?', [req.params.id]);
     if (rows.length === 0) { await conn.rollback(); return res.status(404).json({ message: 'Not found' }); }
     const reservation = rows[0];
-    
+
     // Check overstay
     const now = new Date();
     const endTime = new Date(reservation.end_time);
@@ -169,7 +196,7 @@ router.put('/:id/complete', authMiddleware, async (req, res) => {
     if (now > endTime) {
       const minutesOverstayed = Math.ceil((now - endTime) / (1000 * 60));
       const fineAmount = Math.round(minutesOverstayed * 0.1 * 100) / 100; // €0.10/min
-      const [fineResult] = await conn.execute(
+      await conn.execute(
         'INSERT INTO violation (reservation_id, user_id, minutes_overstayed, fine_amount, status, detected_at) VALUES (?,?,?,?,?,NOW())',
         [req.params.id, reservation.user_id, minutesOverstayed, fineAmount, 'unpaid']
       );
@@ -189,4 +216,3 @@ router.put('/:id/complete', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
-
