@@ -49,7 +49,7 @@ export default function MyViolations() {
       ) : (
         <div className="violations-list">
           {violations.map(v => (
-            <div key={v.id} className="violation-item">
+            <div key={v.violation_id} className="violation-item">
               <div className="violation-icon">⚠️</div>
               <div className="violation-details">
                 <h3>Overstay Fine — Reservation #{v.reservation_id}</h3>
@@ -60,7 +60,7 @@ export default function MyViolations() {
               <div className="violation-right">
                 <span className="status-badge" style={{background: statusColor(v.status)}}>{v.status}</span>
                 {v.status === 'unpaid' && (
-                  <button onClick={() => payFine(v.id)} className="btn-danger">Pay €{v.fine_amount}</button>
+                  <button onClick={() => payFine(v.violation_id)} className="btn-danger">Pay €{v.fine_amount}</button>
                 )}
               </div>
             </div>

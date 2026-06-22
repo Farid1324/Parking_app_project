@@ -174,9 +174,9 @@ router.get('/violations', authMiddleware, adminMiddleware, async (req, res) => {
 
 router.put('/violations/:id/pay', authMiddleware, async (req, res) => {
   try {
-    const [rows] = await db.execute('SELECT * FROM violation WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    const [rows] = await db.execute('SELECT * FROM violation WHERE violation_id = ? AND user_id = ?', [req.params.id, req.user.id]);
     if (rows.length === 0) return res.status(404).json({ message: 'Not found' });
-    await db.execute("UPDATE violation SET status = 'paid' WHERE id = ?", [req.params.id]);
+    await db.execute("UPDATE violation SET status = 'paid' WHERE violation_id = ?", [req.params.id]);
     await db.execute(
       'INSERT INTO payment (user_id, reservation_id, amount, payment_type, status, paid_at) VALUES (?,?,?,?,?,NOW())',
       [req.user.id, rows[0].reservation_id, rows[0].fine_amount, 'fine', 'completed']
