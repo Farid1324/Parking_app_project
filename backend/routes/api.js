@@ -224,6 +224,47 @@ router.post('/pricing-rules', authMiddleware, adminMiddleware, async (req, res) 
   } catch (err) { res.status(500).json({ message: 'Server error' }); }
 });
 
+
+// GET /api/profile - get logged in user's info
+router.get('/profile', authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      'SELECT id, first_name, last_name, email, user_type, status, created_at FROM user WHERE id = ?',
+      [req.user.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: 'User not found' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+ 
+// PUT /api/profile - update logged in user's info
+router.put('/profile', authMiddleware, async (req, res) => {
+  try {
+    const { first_name, last_name, email } = req.body;
+    if (!first_name || !last_name || !email) {
+      return res.status(400).json({ message: 'All fields required' });
+    }
+    // Check email not taken by another user
+    const [existing] = await db.execute(
+      'SELECT id FROM user WHERE email = ? AND id != ?',
+      [email, req.user.id]
+    );
+    if (existing.length > 0) return res.status(400).json({ message: 'Email already in use' });
+ 
+    await db.execute(
+      'UPDATE user SET first_name = ?, last_name = ?, email = ? WHERE id = ?',
+      [first_name, last_name, email, req.user.id]
+    );
+    res.json({ message: 'Profile updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // ── REPORTS (admin) ───────────────────────────────────────────────────────────
 
 router.get('/reports/summary', authMiddleware, adminMiddleware, async (req, res) => {
